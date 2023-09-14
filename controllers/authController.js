@@ -17,7 +17,9 @@ const register = async (req, res) => {
 
   const user = await User.create({ email, name, password, role });
 
-  res.status(StatusCodes.CREATED).json({ user });
+  const jwtToken = user.generateJwtToken();
+
+  res.status(StatusCodes.CREATED).json({ user, jwtToken });
 };
 
 const login = async (req, res) => {};
