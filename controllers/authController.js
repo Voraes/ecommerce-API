@@ -3,14 +3,19 @@ const { StatusCodes } = require('http-status-codes');
 const customError = require('../errors');
 
 const register = async (req, res) => {
-  const { email } = req.body;
+  const { email, name, password } = req.body;
+
   const isEmailAlreadyInUse = await User.findOne({ email });
 
   if (isEmailAlreadyInUse) {
     throw new customError.BadRequestError('Email already exists');
   }
 
-  const user = await User.create({ ...req.body });
+  //First User is and Admin
+  const isFirstAccount = (await User.countDocuments({})) === 0;
+  const role = isFirstAccount ? 'admin' : 'user';
+
+  const user = await User.create({ email, name, password, role });
 
   res.status(StatusCodes.CREATED).json({ user });
 };
