@@ -19,7 +19,14 @@ const register = async (req, res) => {
 
   const jwtToken = user.generateJwtToken();
 
-  res.status(StatusCodes.CREATED).json({ user, jwtToken });
+  const oneDay = 24 * 60 * 60 * 1000;
+
+  res.cookie('jwtToken', jwtToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + oneDay),
+  });
+
+  res.status(StatusCodes.CREATED).json({ user });
 };
 
 const login = async (req, res) => {};
