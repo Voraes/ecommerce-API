@@ -10,10 +10,12 @@ const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 const morgan = require('morgan');
 const authRouter = require('./routes/authRoutes');
+const cookieParser = require('cookie-parser');
 
 //Middleware
 app.use(express.json());
 app.use(morgan('dev'));
+app.use(cookieParser(process.env.JWT_SECRET));
 
 //Routes
 app.use('/api/v1/auth', authRouter);
