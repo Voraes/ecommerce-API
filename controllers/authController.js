@@ -54,6 +54,7 @@ const login = async (req, res) => {
 };
 
 const logout = async (req, res) => {
+  // Clear the cookie
   res.cookie('jwtToken', 'logout', {
     httpOnly: true,
     expires: new Date(Date.now()),
