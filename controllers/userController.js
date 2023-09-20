@@ -4,6 +4,7 @@ const CustomError = require('../errors');
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: 'user' }).select('-password');
+  console.log(req.user);
   res.status(StatusCodes.OK).json({ users });
 };
 

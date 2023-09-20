@@ -8,6 +8,7 @@ require('express-async-errors');
 const connectDB = require('./db/connect');
 const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
+const { authenticateUser } = require('./middleware/authentication');
 const morgan = require('morgan');
 const authRouter = require('./routes/authRoutes.js');
 const userRouter = require('./routes/userRoutes');
@@ -20,7 +21,7 @@ app.use(cookieParser(process.env.JWT_SECRET));
 
 //Routes
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/users', userRouter);
+app.use('/api/v1/users', authenticateUser, userRouter);
 
 //Error Middleware
 app.use(notFoundMiddleware);
