@@ -12,13 +12,22 @@ const getAllUsers = async (req, res) => {
 const getSingleUser = async (req, res) => {
   const id = req.params.id;
 
-  const user = await User.findOne({ _id: id }).select('-password');
-
-  if (!user) {
-    throw new CustomError.NotFoundError(`No user with id: ${id}`);
+  if (!id) {
+    throw new CustomError.BadRequestError('Please provide id');
   }
 
-  res.status(StatusCodes.OK).json({ user });
+  if (req.user.id === id || req.user.role === 'admin') {
+    const user = await User.findOne({ _id: id }).select('-password');
+
+    if (!user) {
+      throw new CustomError.NotFoundError(`No user with id: ${id}`);
+    }
+    res.status(StatusCodes.OK).json({ user });
+  } else {
+    throw new CustomError.UnauthorizedError(
+      'Unauthorized to access this route'
+    );
+  }
 };
 
 const showCurrentUser = async (req, res) => {
