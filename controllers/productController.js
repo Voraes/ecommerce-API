@@ -38,7 +38,6 @@ const createProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
   const products = await Product.find({});
-
   res.status(StatusCodes.OK).json({ products, count: products.length });
 };
 
@@ -96,13 +95,13 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   const { id } = req.params;
-  const product = Product.findOne({ _id: id });
+  const toBeDeletedProduct = Product.findOne({ _id: id });
 
-  if (!product) {
+  if (!toBeDeletedProduct) {
     throw new CustomError.NotFoundError(`No product with id: ${id}`);
   }
 
-  await product.remove();
+  await toBeDeletedProduct.remove();
 
   res.status(StatusCodes.OK).json({ msg: 'Product deleted' });
 };
