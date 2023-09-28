@@ -52,10 +52,6 @@ const ProductSchema = new mongoose.Schema(
       required: [true, 'Please provide inventory'],
       default: 15,
     },
-    averateRating: {
-      type: Number,
-      default: 0,
-    },
     user: {
       type: mongoose.Types.ObjectId,
       ref: 'User',
@@ -64,5 +60,7 @@ const ProductSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+ProductSchema.pre('save', async function () {});
 
 module.exports = mongoose.model('Product', ProductSchema);

@@ -1,7 +1,7 @@
 const User = require('../models/User');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
-const jwt = require('../utils/jwt');
+const { attachCookiesToResponse } = require('../utils/jwtUtils');
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({ role: 'user' }).select('-password');
@@ -55,7 +55,7 @@ const updateUser = async (req, res) => {
   }
 
   const payload = { name: user.name, id: user._id, role: user.role };
-  jwt.attachCookiesToResponse(res, payload);
+  attachCookiesToResponse(res, payload);
 
   res.status(StatusCodes.OK).json({ user: payload });
 };

@@ -2,6 +2,11 @@ const Product = require('../models/Product');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const path = require('path');
+const Review = require('../models/Review');
+const {
+  getAverageRatingForProduct,
+  getNumOfReviews,
+} = require('../utils/productUtils');
 
 const createProduct = async (req, res) => {
   const {
@@ -49,7 +54,9 @@ const getSingleProduct = async (req, res) => {
     throw new CustomError.NotFoundError(`No product with id: ${id}`);
   }
 
-  res.status(StatusCodes.OK).json({ product });
+  const averageRating = await getAverageRatingForProduct(id);
+  const numOfReviews = await getNumOfReviews(id);
+  res.status(StatusCodes.OK).json({ product, averageRating, numOfReviews });
 };
 
 const updateProduct = async (req, res) => {
@@ -90,7 +97,9 @@ const updateProduct = async (req, res) => {
     throw new CustomError.NotFoundError(`No product with id: ${id}`);
   }
 
-  res.status(StatusCodes.OK).json({ product });
+  const averageRating = await getAverageRatingForProduct(id);
+  const numOfReviews = await getNumOfReviews(id);
+  res.status(StatusCodes.OK).json({ product, averageRating, numOfReviews });
 };
 
 const deleteProduct = async (req, res) => {

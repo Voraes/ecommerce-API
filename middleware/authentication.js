@@ -1,5 +1,5 @@
 const CustomError = require('../errors');
-const jwt = require('../utils/jwt');
+const { isJwtTokenValid } = require('../utils/jwtUtils');
 
 const authenticateUser = (req, res, next) => {
   const token = req.signedCookies.jwtToken;
@@ -9,7 +9,7 @@ const authenticateUser = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.isJwtTokenValid(token);
+    const decoded = isJwtTokenValid(token);
     req.user = { name: decoded.name, id: decoded.id, role: decoded.role };
     next();
   } catch (error) {
