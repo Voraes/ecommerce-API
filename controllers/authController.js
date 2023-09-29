@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { attachCookiesToResponse } = require('../utils/jwt');
+const { attachCookiesToResponse } = require('../utils/jwtUtils');
 const { StatusCodes } = require('http-status-codes');
 const customError = require('../errors');
 

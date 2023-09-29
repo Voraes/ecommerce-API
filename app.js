@@ -9,6 +9,7 @@ const authRouter = require('./routes/authRoutes.js');
 const userRouter = require('./routes/userRoutes');
 const productRouter = require('./routes/productRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const orderRouter = require('./routes/orderRoutes');
 
 //Other Imports
 require('dotenv').config();
@@ -30,6 +31,7 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/product', productRouter);
 app.use('/api/v1/review', reviewRouter);
+app.use('/api/v1/orders', orderRouter);
 
 //Error Middleware
 app.use(notFoundMiddleware);

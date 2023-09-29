@@ -38,7 +38,7 @@ const OrderSchema = mongoose.Schema(
       required: true,
     },
     clientSecret: {
-      type: Number,
+      type: String,
       required: true,
     },
     paymentIntentId: {
