@@ -1,0 +1,1267 @@
+openapi: 3.0.0
+
+info:
+  title: Ecommerce API
+
+  contact: {}
+
+  version: '1.0'
+
+servers:
+  - url: https://ecommerce-api-bc71.onrender.com/api/v1
+
+    variables: {}
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+
+      summary: Register User
+
+      operationId: RegisterUser
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/RegisterUserRequest'
+
+                - example:
+                    name: newOne
+
+                    email: newone@gmail.com
+
+                    password: '123456'
+
+            example:
+              name: newOne
+
+              email: newone@gmail.com
+
+              password: '123456'
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+
+      summary: Login User
+
+      operationId: LoginUser
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/LoginUserRequest'
+
+                - example:
+                    email: victor@gmail.com
+
+                    password: secret
+
+            example:
+              email: victor@gmail.com
+
+              password: secret
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+  /auth/logout:
+    get:
+      tags:
+        - Auth
+
+      summary: Logout User
+
+      operationId: LogoutUser
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+  /users:
+    get:
+      tags:
+        - User
+
+      summary: Get All Users
+
+      operationId: GetAllUsers
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /users/me:
+    get:
+      tags:
+        - User
+
+      summary: Show Current User
+
+      operationId: ShowCurrentUser
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /users/updateUser:
+    patch:
+      tags:
+        - User
+
+      summary: Update User
+
+      operationId: UpdateUser
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UpdateUserRequest'
+
+                - example:
+                    name: john
+
+                    email: john@gmail.com
+
+            example:
+              name: john
+
+              email: john@gmail.com
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /users/updateUserPassword:
+    patch:
+      tags:
+        - User
+
+      summary: Update User Password
+
+      operationId: UpdateUserPassword
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UpdateUserPasswordRequest'
+
+                - example:
+                    oldPassword: '123456'
+
+                    newPassword: secret
+
+            example:
+              oldPassword: '123456'
+
+              newPassword: secret
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The User ID
+
+    get:
+      tags:
+        - User
+
+      summary: Get Single User
+
+      operationId: GetSingleUser
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /product:
+    post:
+      tags:
+        - Product
+
+      summary: Create Product
+
+      operationId: CreateProduct
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/CreateProductRequest'
+
+                - example:
+                    name: Product 2
+
+                    price: 1
+
+                    image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+                    colors:
+                      - '#ff0000'
+
+                    company: ikea
+
+                    description: amazing product, just try it!
+
+                    category: office
+
+            example:
+              name: Product 2
+
+              price: 1
+
+              image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+              colors:
+                - '#ff0000'
+
+              company: ikea
+
+              description: amazing product, just try it!
+
+              category: office
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+    get:
+      tags:
+        - Product
+
+      summary: Get All Products
+
+      operationId: GetAllProducts
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+  /product/uploadImage:
+    post:
+      tags:
+        - Product
+
+      summary: Upload Image
+
+      operationId: UploadImage
+
+      parameters: []
+
+      requestBody:
+        content:
+          multipart/form-data:
+            encoding: {}
+
+            schema:
+              required:
+                - image
+
+              type: object
+
+              properties:
+                image:
+                  type: string
+
+                  format: binary
+
+        required: false
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /product/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The Product ID
+
+    get:
+      tags:
+        - Product
+
+      summary: Get Single Product
+
+      operationId: GetSingleProduct
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+    patch:
+      tags:
+        - Product
+
+      summary: Update Product
+
+      operationId: UpdateProduct
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UpdateProductRequest'
+
+                - example:
+                    name: New Product
+
+                    price: 1
+
+                    image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+                    colors:
+                      - '#ff0000'
+
+                    company: marcos
+
+                    description: yeah
+
+                    category: office
+
+            example:
+              name: New Product
+
+              price: 1
+
+              image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+              colors:
+                - '#ff0000'
+
+              company: marcos
+
+              description: yeah
+
+              category: office
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+    delete:
+      tags:
+        - Product
+
+      summary: Delete Product
+
+      operationId: DeleteProduct
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /product/{id}/reviews:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The User ID
+
+    get:
+      tags:
+        - Product
+
+      summary: Get Single Product Reviews
+
+      operationId: GetSingleProductReviews
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /review:
+    post:
+      tags:
+        - Reviews
+
+      summary: Create Review
+
+      operationId: CreateReview
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/CreateReviewRequest'
+
+                - example:
+                    rating: 5
+
+                    title: Incredible
+
+                    comment: yeah
+
+                    productId: 6515889e9e972766f4dbadc2
+
+            example:
+              rating: 5
+
+              title: Incredible
+
+              comment: yeah
+
+              productId: 6515889e9e972766f4dbadc2
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+    get:
+      tags:
+        - Reviews
+
+      summary: Get All Reviews
+
+      operationId: GetAllReviews
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+  /review/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The Review ID
+
+    get:
+      tags:
+        - Reviews
+
+      summary: Get Single Review
+
+      operationId: GetSingleReview
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+      security: []
+
+    patch:
+      tags:
+        - Reviews
+
+      summary: Update Review
+
+      operationId: UpdateReview
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UpdateReviewRequest'
+
+                - example:
+                    rating: 1
+
+                    title: Not so incredible anymore
+
+                    comment: Nah
+
+            example:
+              rating: 1
+
+              title: Not so incredible anymore
+
+              comment: Nah
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+    delete:
+      tags:
+        - Reviews
+
+      summary: Delete Review
+
+      operationId: DeleteReview
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /orders:
+    get:
+      tags:
+        - Order
+
+      summary: Get All Orders
+
+      operationId: GetAllOrders
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+    post:
+      tags:
+        - Order
+
+      summary: Create Order
+
+      operationId: CreateOrder
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/CreateOrderRequest'
+
+                - example:
+                    tax: 399
+
+                    shippingFee: 499
+
+                    cartItems:
+                      - name: accent chair
+
+                        price: 2599
+
+                        image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+                        amount: 34
+
+                        product: 65159889e3324f311fb927a0
+
+            example:
+              tax: 399
+
+              shippingFee: 499
+
+              cartItems:
+                - name: accent chair
+
+                  price: 2599
+
+                  image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+                  amount: 34
+
+                  product: 65159889e3324f311fb927a0
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /orders/showAllMyOrders:
+    get:
+      tags:
+        - Order
+
+      summary: Show All My Orders
+
+      operationId: ShowAllMyOrders
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+  /orders/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: The Order ID
+
+    get:
+      tags:
+        - Order
+
+      summary: Get Single Order
+
+      operationId: GetSingleOrder
+
+      parameters: []
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+    patch:
+      tags:
+        - Order
+
+      summary: Update Order
+
+      operationId: UpdateOrder
+
+      parameters: []
+
+      requestBody:
+        description: ''
+
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UpdateOrderRequest'
+
+                - example:
+                    paymentIntentId: somePaymentId
+
+            example:
+              paymentIntentId: somePaymentId
+
+        required: true
+
+      responses:
+        '200':
+          description: ''
+
+          headers: {}
+
+      deprecated: false
+
+components:
+  schemas:
+    RegisterUserRequest:
+      title: RegisterUserRequest
+
+      required:
+        - name
+
+        - email
+
+        - password
+
+      type: object
+
+      properties:
+        name:
+          type: string
+
+        email:
+          type: string
+
+        password:
+          type: string
+
+      example:
+        name: newOne
+
+        email: newone@gmail.com
+
+        password: '123456'
+
+    LoginUserRequest:
+      title: LoginUserRequest
+
+      required:
+        - email
+
+        - password
+
+      type: object
+
+      properties:
+        email:
+          type: string
+
+        password:
+          type: string
+
+      example:
+        email: victor@gmail.com
+
+        password: secret
+
+    UpdateUserRequest:
+      title: UpdateUserRequest
+
+      required:
+        - name
+
+        - email
+
+      type: object
+
+      properties:
+        name:
+          type: string
+
+        email:
+          type: string
+
+      example:
+        name: john
+
+        email: john@gmail.com
+
+    UpdateUserPasswordRequest:
+      title: UpdateUserPasswordRequest
+
+      required:
+        - oldPassword
+
+        - newPassword
+
+      type: object
+
+      properties:
+        oldPassword:
+          type: string
+
+        newPassword:
+          type: string
+
+      example:
+        oldPassword: '123456'
+
+        newPassword: secret
+
+    CreateProductRequest:
+      title: CreateProductRequest
+
+      required:
+        - name
+
+        - price
+
+        - image
+
+        - colors
+
+        - company
+
+        - description
+
+        - category
+
+      type: object
+
+      properties:
+        name:
+          type: string
+
+        price:
+          type: integer
+
+          format: int32
+
+        image:
+          type: string
+
+        colors:
+          type: array
+
+          items:
+            type: string
+
+          description: ''
+
+        company:
+          type: string
+
+        description:
+          type: string
+
+        category:
+          type: string
+
+      example:
+        name: Product 2
+
+        price: 1
+
+        image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+        colors:
+          - '#ff0000'
+
+        company: ikea
+
+        description: amazing product, just try it!
+
+        category: office
+
+    UpdateProductRequest:
+      title: UpdateProductRequest
+
+      required:
+        - name
+
+        - price
+
+        - image
+
+        - colors
+
+        - company
+
+        - description
+
+        - category
+
+      type: object
+
+      properties:
+        name:
+          type: string
+
+        price:
+          type: integer
+
+          format: int32
+
+        image:
+          type: string
+
+        colors:
+          type: array
+
+          items:
+            type: string
+
+          description: ''
+
+        company:
+          type: string
+
+        description:
+          type: string
+
+        category:
+          type: string
+
+      example:
+        name: New Product
+
+        price: 1
+
+        image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+        colors:
+          - '#ff0000'
+
+        company: marcos
+
+        description: yeah
+
+        category: office
+
+    CreateReviewRequest:
+      title: CreateReviewRequest
+
+      required:
+        - rating
+
+        - title
+
+        - comment
+
+        - productId
+
+      type: object
+
+      properties:
+        rating:
+          type: integer
+
+          format: int32
+
+        title:
+          type: string
+
+        comment:
+          type: string
+
+        productId:
+          type: string
+
+      example:
+        rating: 5
+
+        title: Incredible
+
+        comment: yeah
+
+        productId: 6515889e9e972766f4dbadc2
+
+    UpdateReviewRequest:
+      title: UpdateReviewRequest
+
+      required:
+        - rating
+
+        - title
+
+        - comment
+
+      type: object
+
+      properties:
+        rating:
+          type: integer
+
+          format: int32
+
+        title:
+          type: string
+
+        comment:
+          type: string
+
+      example:
+        rating: 1
+
+        title: Not so incredible anymore
+
+        comment: Nah
+
+    CreateOrderRequest:
+      title: CreateOrderRequest
+
+      required:
+        - tax
+
+        - shippingFee
+
+        - cartItems
+
+      type: object
+
+      properties:
+        tax:
+          type: integer
+
+          format: int32
+
+        shippingFee:
+          type: integer
+
+          format: int32
+
+        cartItems:
+          type: array
+
+          items:
+            $ref: '#/components/schemas/CartItem'
+
+          description: ''
+
+      example:
+        tax: 399
+
+        shippingFee: 499
+
+        cartItems:
+          - name: accent chair
+
+            price: 2599
+
+            image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+            amount: 34
+
+            product: 65159889e3324f311fb927a0
+
+    CartItem:
+      title: CartItem
+
+      required:
+        - name
+
+        - price
+
+        - image
+
+        - amount
+
+        - product
+
+      type: object
+
+      properties:
+        name:
+          type: string
+
+        price:
+          type: integer
+
+          format: int32
+
+        image:
+          type: string
+
+        amount:
+          type: integer
+
+          format: int32
+
+        product:
+          type: string
+
+      example:
+        name: accent chair
+
+        price: 2599
+
+        image: https://dl.airtable.com/.attachmentThumbnails/e8bc3791196535af65f40e36993b9e1f/438bd160
+
+        amount: 34
+
+        product: 65159889e3324f311fb927a0
+
+    UpdateOrderRequest:
+      title: UpdateOrderRequest
+
+      required:
+        - paymentIntentId
+
+      type: object
+
+      properties:
+        paymentIntentId:
+          type: string
+
+      example:
+        paymentIntentId: somePaymentId
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: jwtToken
+
+security:
+  - cookieAuth: []
+
+tags:
+  - name: Auth
+
+  - name: User
+
+  - name: Product
+
+  - name: Reviews
+
+  - name: Order
