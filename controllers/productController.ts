@@ -1,14 +1,17 @@
-const Product = require('../models/Product');
-const { StatusCodes } = require('http-status-codes');
-const CustomError = require('../errors');
-const path = require('path');
-const Review = require('../models/Review');
-const {
+import { Request, Response } from 'express';
+import { CustomRequest } from '../middleware/authentication';
+const Product = require('../models/Product').default;
+import { StatusCodes } from 'http-status-codes';
+import CustomError from '../errors';
+import path from 'path';
+import Review from '../models/Review';
+import {
   getAverageRatingForProduct,
   getNumOfReviews,
-} = require('../utils/productUtils');
+} from '../utils/productUtils';
+import { UploadedFile } from 'express-fileupload';
 
-const createProduct = async (req, res) => {
+export const createProduct = async (req: CustomRequest, res: Response) => {
   const {
     name,
     price,
@@ -22,6 +25,10 @@ const createProduct = async (req, res) => {
     inventory,
     averateRating,
   } = req.body;
+
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
+  }
 
   const product = await Product.create({
     name,
@@ -41,12 +48,12 @@ const createProduct = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ product });
 };
 
-const getAllProducts = async (req, res) => {
+export const getAllProducts = async (req: Request, res: Response) => {
   const products = await Product.find({});
   res.status(StatusCodes.OK).json({ products, count: products.length });
 };
 
-const getSingleProduct = async (req, res) => {
+export const getSingleProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
   const product = await Product.findOne({ _id: id });
 
@@ -59,7 +66,7 @@ const getSingleProduct = async (req, res) => {
   res.status(StatusCodes.OK).json({ product, averageRating, numOfReviews });
 };
 
-const updateProduct = async (req, res) => {
+export const updateProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
   const {
     name,
@@ -102,7 +109,7 @@ const updateProduct = async (req, res) => {
   res.status(StatusCodes.OK).json({ product, averageRating, numOfReviews });
 };
 
-const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req: Request, res: Response) => {
   const { id } = req.params;
   const toBeDeletedProduct = Product.findOne({ _id: id });
 
@@ -116,12 +123,16 @@ const deleteProduct = async (req, res) => {
   res.status(StatusCodes.OK).json({ msg: 'Product deleted' });
 };
 
-const uploadImage = async (req, res) => {
+export const uploadImage = async (req: CustomRequest, res: Response) => {
   if (!req.files) {
     throw new CustomError.BadRequestError('No Image Uploaded');
   }
 
-  const productImage = req.files.image;
+  const productImage: UploadedFile | UploadedFile[] = req.files.image;
+
+  if (Array.isArray(productImage)) {
+    throw new CustomError.BadRequestError('Please only upload one image');
+  }
 
   if (!productImage.mimetype.startsWith('image')) {
     throw new CustomError.BadRequestError('Please Upload Image');
@@ -145,13 +156,4 @@ const uploadImage = async (req, res) => {
   res
     .status(StatusCodes.OK)
     .json({ imagePath: `/uploads/${productImage.name}` });
-};
-
-module.exports = {
-  createProduct,
-  getAllProducts,
-  getSingleProduct,
-  updateProduct,
-  deleteProduct,
-  uploadImage,
 };

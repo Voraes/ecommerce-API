@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
+import mongoose, { Schema } from 'mongoose';
+import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new Schema({
   name: {
     type: String,
     required: [true, 'Please provide name'],
@@ -13,9 +13,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     unique: true,
     required: [true, 'Please provide email'],
-    validate: {
-      validator: validator.isEmail,
-      message: 'Please provide valid email',
+    RegExp: {
+      value:
+        /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+      message: 'Please provide a valid email',
     },
   },
   password: {
@@ -30,16 +31,16 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// Hash the plain text password
 UserSchema.pre('save', async function () {
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Compare the plain text password with the hashed password
-UserSchema.methods.comparePassword = async function (candidatePassword) {
+UserSchema.methods.comparePassword = async function (
+  candidatePassword: string
+) {
   const isMatch = await bcrypt.compare(candidatePassword, this.password);
   return isMatch;
 };
 
-module.exports = mongoose.model('User', UserSchema);
+export default mongoose.model('User', UserSchema);

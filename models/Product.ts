@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose, { Schema, Types } from 'mongoose';
 
-const ProductSchema = new mongoose.Schema(
+const ProductSchema = new Schema(
   {
     name: {
       type: String,
@@ -53,7 +53,7 @@ const ProductSchema = new mongoose.Schema(
       default: 15,
     },
     user: {
-      type: mongoose.Types.ObjectId,
+      type: Types.ObjectId,
       ref: 'User',
       required: true,
     },
@@ -61,6 +61,4 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-ProductSchema.pre('save', async function () {});
-
-module.exports = mongoose.model('Product', ProductSchema);
+export default mongoose.model('Product', ProductSchema);

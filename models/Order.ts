@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+import mongoose, { Schema, Types } from 'mongoose';
 
-const SingleCartItemSchema = mongoose.Schema({
+const SingleCartItemSchema = new Schema({
   name: { type: String, required: true },
   image: { type: String, required: true },
   price: { type: Number, required: true },
   amount: { type: Number, required: true },
-  product: { type: mongoose.Schema.ObjectId, ref: 'Product', required: true },
+  product: { type: Types.ObjectId, ref: 'Product', required: true },
 });
 
-const OrderSchema = mongoose.Schema(
+const OrderSchema = new Schema(
   {
     tax: {
       type: Number,
@@ -33,7 +33,7 @@ const OrderSchema = mongoose.Schema(
       default: 'pending',
     },
     user: {
-      type: mongoose.Schema.ObjectId,
+      type: Types.ObjectId,
       ref: 'User',
       required: true,
     },
@@ -48,4 +48,4 @@ const OrderSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Order', OrderSchema);
+export default mongoose.model('Order', OrderSchema);

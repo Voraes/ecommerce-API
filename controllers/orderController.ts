@@ -1,14 +1,24 @@
-const Order = require('../models/Order');
-const Product = require('../models/Product');
-const CustomError = require('../errors');
-const { StatusCodes } = require('http-status-codes');
+import Order from '../models/Order';
+const Product = require('../models/Product').default;
+import CustomError from '../errors';
+import { StatusCodes } from 'http-status-codes';
+import { Request, Response } from 'express';
+import { CustomRequest } from '../middleware/authentication';
 
-const fakeStripeAPI = async ({ amount, currency }) => {
+interface OrderItem {
+  amount: number;
+  name: String;
+  price: number;
+  image: String;
+  product: any;
+}
+
+const fakeStripeAPI = async (amount: number, currency: string) => {
   const clientSecret = 'someRamdomSecretValue';
   return { clientSecret, amount };
 };
 
-const createOrder = async (req, res) => {
+export const createOrder = async (req: CustomRequest, res: Response) => {
   const { cartItems, tax, shippingFee } = req.body;
 
   if (!cartItems || cartItems.length < 1) {
@@ -21,7 +31,7 @@ const createOrder = async (req, res) => {
     );
   }
 
-  let orderItems = [];
+  let orderItems: OrderItem[] = [];
   let subTotal = 0;
 
   for (const item of cartItems) {
@@ -49,10 +59,11 @@ const createOrder = async (req, res) => {
 
   const total = tax + shippingFee + subTotal;
 
-  const paymentIntent = await fakeStripeAPI({
-    amount: total,
-    currency: 'usd',
-  });
+  const paymentIntent = await fakeStripeAPI(total, 'usd');
+
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
+  }
 
   const order = await Order.create({
     tax,
@@ -70,12 +81,12 @@ const createOrder = async (req, res) => {
   });
 };
 
-const getAllOrders = async (req, res) => {
+export const getAllOrders = async (req: Request, res: Response) => {
   const orders = await Order.find({});
   res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
 
-const getSingleOrder = async (req, res) => {
+export const getSingleOrder = async (req: CustomRequest, res: Response) => {
   const { id } = req.params;
 
   const order = await Order.findOne({ _id: id });
@@ -84,7 +95,11 @@ const getSingleOrder = async (req, res) => {
     throw new CustomError.NotFoundError(`No order found with id: ${id}`);
   }
 
-  if (req.user.id === order.user || req.user.role === 'admin') {
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
+  }
+
+  if (req.user.id === String(order.user) || req.user.role === 'admin') {
     res.status(StatusCodes.OK).json({ order });
   } else {
     throw new CustomError.BadRequestError(
@@ -93,7 +108,14 @@ const getSingleOrder = async (req, res) => {
   }
 };
 
-const getCurrentUserOrders = async (req, res) => {
+export const getCurrentUserOrders = async (
+  req: CustomRequest,
+  res: Response
+) => {
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
+  }
+
   const orders = await Order.find({ user: req.user.id });
 
   if (!orders) {
@@ -103,7 +125,7 @@ const getCurrentUserOrders = async (req, res) => {
   res.status(StatusCodes.OK).json({ orders, count: orders.length });
 };
 
-const updateOrder = async (req, res) => {
+export const updateOrder = async (req: CustomRequest, res: Response) => {
   const { id } = req.params;
   const { paymentIntentId } = req.body;
 
@@ -113,7 +135,11 @@ const updateOrder = async (req, res) => {
     throw new CustomError.NotFoundError(`No order found with id: ${id}`);
   }
 
-  if (req.user.id === order.user || req.user.role === 'admin') {
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
+  }
+
+  if (req.user.id === String(order.user) || req.user.role === 'admin') {
     order.paymentIntentId = paymentIntentId;
     order.status = 'paid';
     await order.save();
@@ -124,12 +150,4 @@ const updateOrder = async (req, res) => {
       'Not authorized to access this route'
     );
   }
-};
-
-module.exports = {
-  getAllOrders,
-  getSingleOrder,
-  getCurrentUserOrders,
-  createOrder,
-  updateOrder,
 };

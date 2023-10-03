@@ -1,15 +1,21 @@
-const Product = require('../models/Product');
-const Review = require('../models/Review');
-const { StatusCodes } = require('http-status-codes');
-const CustomError = require('../errors');
+import { Request, Response } from 'express';
+import { CustomRequest } from '../middleware/authentication';
+import Product from '../models/Product';
+import Review from '../models/Review';
+import { StatusCodes } from 'http-status-codes';
+import CustomError from '../errors';
 
-const createReview = async (req, res) => {
+export const createReview = async (req: CustomRequest, res: Response) => {
   const { rating, title, comment, productId } = req.body;
 
   const isValidProduct = await Product.findOne({ _id: productId });
 
   if (!isValidProduct) {
     throw new CustomError.NotFoundError(`No Product with id: ${productId}`);
+  }
+
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
   }
 
   const userAlreadySubmitted = await Review.findOne({
@@ -34,14 +40,14 @@ const createReview = async (req, res) => {
   res.status(StatusCodes.CREATED).json({ rating, title, comment, productId });
 };
 
-const getAllReviews = async (req, res) => {
+export const getAllReviews = async (req: Request, res: Response) => {
   const reviews = await Review.find({})
     .populate({ path: 'product', select: 'name company price' })
     .populate({ path: 'user', select: 'name' });
   res.status(StatusCodes.OK).json({ reviews, count: reviews.length });
 };
 
-const getSingleReview = async (req, res) => {
+export const getSingleReview = async (req: Request, res: Response) => {
   const { id } = req.params;
   const review = await Review.findOne({ _id: id })
     .populate({ path: 'product', select: 'name company price' })
@@ -54,7 +60,7 @@ const getSingleReview = async (req, res) => {
   res.status(StatusCodes.OK).json({ review });
 };
 
-const updateReview = async (req, res) => {
+export const updateReview = async (req: CustomRequest, res: Response) => {
   const { id } = req.params;
   const { rating, title, comment } = req.body;
 
@@ -64,7 +70,11 @@ const updateReview = async (req, res) => {
     throw new CustomError.NotFoundError(`No review found with id: ${id}`);
   }
 
-  if (req.user.id === review.user || req.user.role === 'admin') {
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
+  }
+
+  if (req.user.id === String(review.user) || req.user.role === 'admin') {
     review.rating = rating;
     review.title = title;
     review.comment = comment;
@@ -78,15 +88,22 @@ const updateReview = async (req, res) => {
   }
 };
 
-const deleteReview = async (req, res) => {
+export const deleteReview = async (req: CustomRequest, res: Response) => {
   const { id } = req.params;
-  const toBeDeletedReview = Review.findOne({ _id: id });
+  const toBeDeletedReview = await Review.findOne({ _id: id });
 
   if (!toBeDeletedReview) {
     throw new CustomError.NotFoundError(`No review found with id: ${id}`);
   }
 
-  if (req.user.id === toBeDeletedReview.user || req.user.role === 'admin') {
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
+  }
+
+  if (
+    req.user.id === String(toBeDeletedReview.user) ||
+    req.user.role === 'admin'
+  ) {
     await toBeDeletedReview.remove();
     res.status(StatusCodes.OK).json({ msg: 'Review Deleted' });
   } else {
@@ -96,17 +113,8 @@ const deleteReview = async (req, res) => {
   }
 };
 
-const getSingleProductReviews = async (req, res) => {
+export const getSingleProductReviews = async (req: Request, res: Response) => {
   const { id } = req.params;
   const reviews = await Review.find({ product: id });
   res.status(StatusCodes.OK).json({ reviews, count: reviews.length });
-};
-
-module.exports = {
-  createReview,
-  getAllReviews,
-  getSingleReview,
-  updateReview,
-  deleteReview,
-  getSingleProductReviews,
 };

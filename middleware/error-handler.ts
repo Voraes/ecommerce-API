@@ -1,6 +1,21 @@
-const { StatusCodes } = require('http-status-codes');
+import { Request, Response, NextFunction } from 'express';
 
-const errorHandlerMiddleware = (err, req, res, next) => {
+import { StatusCodes } from 'http-status-codes';
+
+interface CustomError extends Error {
+  statusCode: number;
+  errors: string[];
+  code: number;
+  keyValue: { [key: string]: string };
+  value: string;
+}
+
+const errorHandlerMiddleware = (
+  err: CustomError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let customError = {
     // set default
     statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
@@ -8,7 +23,7 @@ const errorHandlerMiddleware = (err, req, res, next) => {
   };
   if (err.name === 'ValidationError') {
     customError.msg = Object.values(err.errors)
-      .map((item) => item.message)
+      .map((item: any) => item.message)
       .join(',');
     customError.statusCode = 400;
   }
@@ -26,4 +41,4 @@ const errorHandlerMiddleware = (err, req, res, next) => {
   return res.status(customError.statusCode).json({ msg: customError.msg });
 };
 
-module.exports = errorHandlerMiddleware;
+export default errorHandlerMiddleware;

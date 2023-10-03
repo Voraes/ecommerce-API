@@ -1,19 +1,35 @@
-const User = require('../models/User');
-const { StatusCodes } = require('http-status-codes');
-const CustomError = require('../errors');
-const { attachCookiesToResponse } = require('../utils/jwtUtils');
+import { Request, Response } from 'express';
+import { CustomRequest } from '../middleware/authentication';
 
-const getAllUsers = async (req, res) => {
+import User from '../models/User';
+import { StatusCodes } from 'http-status-codes';
+import CustomError from '../errors';
+import { attachCookiesToResponse } from '../utils/jwtUtils';
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+  save(): Promise<User>;
+}
+
+export const getAllUsers = async (req: CustomRequest, res: Response) => {
   const users = await User.find({ role: 'user' }).select('-password');
-  console.log(req.user);
   res.status(StatusCodes.OK).json({ users });
 };
 
-const getSingleUser = async (req, res) => {
+export const getSingleUser = async (req: CustomRequest, res: Response) => {
   const id = req.params.id;
 
   if (!id) {
     throw new CustomError.BadRequestError('Please provide id');
+  }
+
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
   }
 
   if (req.user.id === id || req.user.role === 'admin') {
@@ -30,15 +46,19 @@ const getSingleUser = async (req, res) => {
   }
 };
 
-const showCurrentUser = async (req, res) => {
+export const showCurrentUser = async (req: CustomRequest, res: Response) => {
   res.status(StatusCodes.OK).json({ user: req.user });
 };
 
-const updateUser = async (req, res) => {
+export const updateUser = async (req: CustomRequest, res: Response) => {
   const { name, email } = req.body;
 
   if (!name || !email) {
     throw new CustomError.BadRequestError('Please provide name and email');
+  }
+
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
   }
 
   const user = await User.findOneAndUpdate(
@@ -60,7 +80,7 @@ const updateUser = async (req, res) => {
   res.status(StatusCodes.OK).json({ user: payload });
 };
 
-const updateUserPassword = async (req, res) => {
+export const updateUserPassword = async (req: CustomRequest, res: Response) => {
   const { oldPassword, newPassword } = req.body;
 
   if (!oldPassword || !newPassword) {
@@ -69,7 +89,15 @@ const updateUserPassword = async (req, res) => {
     );
   }
 
-  const user = await User.findOne({ _id: req.user.id });
+  if (!req.user) {
+    throw new CustomError.UnauthenticatedError('Authentication invalid');
+  }
+
+  const user: User | null = await User.findOne({ _id: req.user.id });
+
+  if (user === null) {
+    throw new CustomError.NotFoundError(`No user with id: ${req.user.id}`);
+  }
 
   const isPasswordCorrect = await user.comparePassword(oldPassword);
 
@@ -81,12 +109,4 @@ const updateUserPassword = async (req, res) => {
   await user.save();
 
   res.status(StatusCodes.OK).json({ msg: 'Password updated successfully' });
-};
-
-module.exports = {
-  getAllUsers,
-  getSingleUser,
-  showCurrentUser,
-  updateUser,
-  updateUserPassword,
 };

@@ -1,15 +1,15 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-const { authenticateUser } = require('../middleware/authentication');
+import { authenticateUser } from '../middleware/authentication';
 
-const {
+import {
   createReview,
   deleteReview,
   getAllReviews,
   getSingleReview,
   updateReview,
-} = require('../controllers/reviewController');
+} from '../controllers/reviewController';
 
 router.route('/').post(authenticateUser, createReview).get(getAllReviews);
 
@@ -19,4 +19,4 @@ router
   .patch(authenticateUser, updateReview)
   .delete(authenticateUser, deleteReview);
 
-module.exports = router;
+export default router;

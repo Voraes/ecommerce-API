@@ -1,70 +1,65 @@
-const User = require('../models/User');
-const { attachCookiesToResponse } = require('../utils/jwtUtils');
-const { StatusCodes } = require('http-status-codes');
-const customError = require('../errors');
+import { Request, Response } from 'express';
+import User from '../models/User';
+import { attachCookiesToResponse } from '../utils/jwtUtils';
+import { StatusCodes } from 'http-status-codes';
+import customError from '../errors';
 
-const register = async (req, res) => {
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+  role: string;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
+
+export const register = async (req: Request, res: Response) => {
   const { email, name, password } = req.body;
 
-  //Check if email is already in use
   const isEmailAlreadyInUse = await User.findOne({ email });
   if (isEmailAlreadyInUse) {
     throw new customError.BadRequestError('Email already exists');
   }
 
-  //First User is and Admin
   const isFirstAccount = (await User.countDocuments({})) === 0;
   const role = isFirstAccount ? 'admin' : 'user';
 
-  //Create a new user
   const user = await User.create({ email, name, password, role });
 
-  //Attach JWT token to the response cookie
   const payload = { name: user.name, id: user._id, role: user.role };
   attachCookiesToResponse(res, payload);
 
   res.status(StatusCodes.CREATED).json({ user: payload });
 };
 
-const login = async (req, res) => {
+export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  //Check if email and password are provided
   if (!email || !password) {
     throw new customError.BadRequestError('Please provide email and password');
   }
 
-  //Check if user exists
-  const user = await User.findOne({ email });
+  const user: User | null = await User.findOne({ email });
   if (!user) {
     throw new customError.UnauthenticatedError('Invalid Credentials');
   }
 
-  //Check if password is correct
   const isPasswordCorrect = await user.comparePassword(password);
   if (!isPasswordCorrect) {
     throw new customError.UnauthenticatedError('Invalid Credentials');
   }
 
-  //Attach JWT token to the response cookie
   const payload = { name: user.name, id: user._id, role: user.role };
   attachCookiesToResponse(res, payload);
 
   res.status(StatusCodes.OK).json({ user: payload });
 };
 
-const logout = async (req, res) => {
-  // Clear the cookie
+export const logout = async (req: Request, res: Response) => {
   res.cookie('jwtToken', 'logout', {
     httpOnly: true,
     expires: new Date(Date.now()),
   });
 
   res.status(StatusCodes.OK).json({ msg: 'User logged out' });
-};
-
-module.exports = {
-  register,
-  login,
-  logout,
 };

@@ -1,6 +1,6 @@
-const mongoose = require('mongoose');
+import mongoose, { Schema, Types } from 'mongoose';
 
-const ReviewSchema = mongoose.Schema(
+const ReviewSchema = new Schema(
   {
     rating: {
       type: Number,
@@ -19,12 +19,12 @@ const ReviewSchema = mongoose.Schema(
       required: [true, 'Please provide review text'],
     },
     user: {
-      type: mongoose.Schema.ObjectId,
+      type: Types.ObjectId,
       ref: 'User',
       required: true,
     },
     product: {
-      type: mongoose.Schema.ObjectId,
+      type: Types.ObjectId,
       ref: 'Product',
       required: true,
     },
@@ -35,4 +35,4 @@ const ReviewSchema = mongoose.Schema(
 //Implemented in the Controller
 //ReviewSchema.index({ user: 1, product: 1 }, { unique: true });
 
-module.exports = mongoose.model('Review', ReviewSchema);
+export default mongoose.model('Review', ReviewSchema);
