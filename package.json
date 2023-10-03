@@ -1,12 +1,13 @@
 {
-  "name": "06-jobs-api",
+  "name": "ecommerce-api",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "app.ts",
   "scripts": {
-    "start": "nodemon app.ts"
+    "build": "tsc",
+    "start": "node dist/app.js"
   },
-  "author": "",
+  "author": "Voraes",
   "license": "ISC",
   "dependencies": {
     "@types/bcryptjs": "^2.4.4",
