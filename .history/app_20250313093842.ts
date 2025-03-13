@@ -40,11 +40,6 @@ app.use(cookieParser(process.env.JWT_SECRET));
 app.use(express.static('./public'));
 app.use(fileUpload());
 
-// Root Route
-app.get('/', (req, res) => {
-  res.send('<h1>Welcome to the E-commerce API</h1><a href="/api/v1/docs">API Documentation</a>');
-});
-
 //Routes
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);

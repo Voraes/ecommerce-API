@@ -48,6 +48,10 @@ app.use((0, morgan_1.default)('dev'));
 app.use((0, cookie_parser_1.default)(process.env.JWT_SECRET));
 app.use(express_1.default.static('./public'));
 app.use((0, express_fileupload_1.default)());
+// Root Route
+app.get('/', (req, res) => {
+    res.send('<h1>Welcome to the E-commerce API</h1><a href="/api/v1/docs">API Documentation</a>');
+});
 //Routes
 app.use('/api/v1/auth', authRoutes_1.default);
 app.use('/api/v1/users', userRoutes_1.default);
