@@ -2,8 +2,6 @@
 
 This project is a comprehensive E-commerce API built using Node.js and TypeScript. It includes features such as authentication and authorization using JWT and cookies, a complete authentication workflow, and data storage with MongoDB via Mongoose. The API is documented with Swagger.
 
-### Access the Live API Docs: [Ecommerce API](https://ecommerce-api-bc71.onrender.com/api/v1/docs)
-
 ### Features:
 - User authentication and authorization
 - JWT-based authentication
